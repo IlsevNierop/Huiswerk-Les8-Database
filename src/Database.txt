@@ -1,0 +1,135 @@
+drop table if exists users;
+drop table if exists televisions cascade;
+drop table if exists ci_modules;
+drop table if exists remote_controllers;
+drop table if exists wall_brackets cascade;
+drop table if exists wall_brackets_televisions;
+
+create table users
+(
+	id int generated always as identity primary key,
+	username varchar(127) not null,
+	password varchar(127) not null,
+	email varchar(127) not null
+
+);
+
+create table remote_controllers
+(
+	id int generated always as identity primary key,
+	name varchar(127) not null unique,
+	brand varchar(127) not null,
+	color varchar(127) not null,
+	price double precision not null,
+	compatible_with varchar(127)
+);
+
+create table ci_modules
+(
+	id int generated always as identity primary key,
+	name varchar(127) not null unique,
+	brand varchar(127) not null,
+	price double precision not null,
+	compatible_with varchar(127)
+);
+
+create table wall_brackets
+(
+	id int generated always as identity primary key,
+	name varchar(127) not null unique,
+	brand varchar(127) not null,
+	price double precision not null
+);
+
+create table televisions
+(
+	id int generated always as identity primary key,
+	name varchar(127) not null unique,
+	type varchar(127) not null,
+	brand varchar(127) not null,
+	price double precision not null,
+	screensize int not null,
+	available double precision not null,
+	refreshrate double precision not null,
+	screentype varchar(255) not null,
+	remote_id int,
+	ci_module_id int,
+	constraint fk_remote_controllers foreign key (remote_id) references remote_controllers(id),
+	constraint fk_ci_module foreign key (ci_module_id)references ci_modules(id)
+);
+
+create table wall_brackets_televisions
+(
+	television_id int,
+	wall_bracket_id int,
+	constraint fk_television foreign key (television_id) references televisions(id),
+	constraint fk_wall_bracket foreign key (wall_bracket_id)references wall_brackets(id)
+);
+
+INSERT INTO users (username, password, email)
+VALUES ('user1', 'testpassword','user1@gmail.com');
+INSERT INTO users (username, password, email)
+VALUES ('user2', 'testpassword2', 'user2@gmail.com');
+
+
+
+INSERT INTO remote_controllers (name, brand, color, price, compatible_with)
+VALUES ('Samsung 5 TV controller', 'Samsung', 'blue', 12.99, 'Samsung HD smart tv');
+INSERT INTO remote_controllers (name, brand, color, price, compatible_with)
+VALUES ('Philips 1 TV controller', 'Philips', 'green', 12.99, 'Philips HD 24 inch');
+INSERT INTO remote_controllers (name, brand, color, price, compatible_with)
+VALUES ('LG 4 TV controller', 'LG', 'red', 12.99, 'LG TV HD');
+
+
+INSERT INTO ci_modules (name, brand, price, compatible_with)
+VALUES ('Samsung CI-module', 'Samsung', 33.97, 'Samsung HD smart tv');
+
+
+INSERT INTO wall_brackets (name, brand, price)
+VALUES ('LG small', 'LG', 32.23);
+INSERT INTO wall_brackets (name, brand, price)
+VALUES ('LG big', 'LG', 32.23);
+INSERT INTO wall_brackets (name, brand, price)
+VALUES ('Philips small', 'Philips', 32.23);
+INSERT INTO wall_brackets (name, brand, price)
+VALUES ('Samsung big', 'Samsung', 32.23);
+INSERT INTO wall_brackets (name, brand, price)
+VALUES ('Samsung small', 'Samsung', 32.23);
+
+
+INSERT INTO televisions (name, type, brand, price, screensize, available, refreshrate, screentype, remote_id, ci_module_id)
+VALUES ('Samsung 4K Smart TV', 'LED', 'Samsung', 899.99, 55, 100, 120, 'LCD', 1, 1);
+INSERT INTO televisions (name, type, brand, price, screensize, available, refreshrate, screentype, remote_id)
+VALUES ('LG 4K Smart TV', 'OLED', 'LG', 1099.99, 65, 50, 240, 'AMOLED', 3);
+INSERT INTO televisions (name, type, brand, price, screensize, available, refreshrate, screentype)
+VALUES ('Sony 4K Smart TV', 'LED', 'Sony', 999.99, 60, 75, 120, 'LCD');
+INSERT INTO televisions (name, type, brand, price, screensize, available, refreshrate, screentype, ci_module_id)
+VALUES ('Toshiba 4K Smart TV', 'LED', 'Toshiba', 799.99, 50, 25, 60, 'LCD', 1);
+INSERT INTO televisions (name, type, brand, price, screensize, available, refreshrate, screentype, remote_id, ci_module_id)
+VALUES ('Vizio 4K Smart TV', 'LED', 'Vizio', 749.99, 55, 60, 120, 'LCD', 3, 1);
+
+
+INSERT INTO wall_brackets_televisions (television_id, wall_bracket_id)
+values (1, 2);
+INSERT INTO wall_brackets_televisions (television_id, wall_bracket_id)
+values (2, 2);
+INSERT INTO wall_brackets_televisions (television_id, wall_bracket_id)
+values (3, 2);
+INSERT INTO wall_brackets_televisions (television_id, wall_bracket_id)
+values (1, 1);
+INSERT INTO wall_brackets_televisions (television_id, wall_bracket_id)
+values (1, 5);
+INSERT INTO wall_brackets_televisions (television_id, wall_bracket_id)
+values (5, 5);
+INSERT INTO wall_brackets_televisions (television_id, wall_bracket_id)
+values (3, 5);
+INSERT INTO wall_brackets_televisions (television_id, wall_bracket_id)
+values (4, 5);
+INSERT INTO wall_brackets_televisions (television_id, wall_bracket_id)
+values (4, 4);
+
+select t.name, wb.name
+from televisions as t
+join wall_brackets_televisions as wbt ON wbt.television_id=t.id
+join wall_brackets as wb ON wbt.wall_bracket_id=wb.id;
+
